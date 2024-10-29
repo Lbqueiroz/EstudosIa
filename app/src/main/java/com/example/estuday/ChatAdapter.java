@@ -3,75 +3,62 @@ package com.example.estuday;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 import java.util.Map;
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
-    private static final int TIPO_USUARIO = 0;
-    private static final int TIPO_IA = 1;
-    private List<Map<String, Object>> mensagens;
+    private List<String> mensagens;
 
-    public ChatAdapter(List<Map<String, Object>> mensagens) {
+    public ChatAdapter(List<String> mensagens) {
         this.mensagens = mensagens;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        Map<String, Object> mensagem = mensagens.get(position);
-        String autor = (String) mensagem.get("autor");
-        return "IA".equals(autor) ? TIPO_IA : TIPO_USUARIO;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TIPO_USUARIO) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_user, parent, false);
-            return new UsuarioViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_ai, parent, false);
-            return new IAViewHolder(view);
-        }
+    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.chat_item, parent, false);
+        return new ChatViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Map<String, Object> mensagem = mensagens.get(position);
-        String conteudo = (String) mensagem.get("conteudo");
+    public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+        String mensagem = mensagens.get(position);
 
-        if (holder instanceof UsuarioViewHolder) {
-            ((UsuarioViewHolder) holder).textMensagemUsuario.setText(conteudo);
+        if (mensagem.startsWith("Bot: ")) {
+            holder.leftChatView.setVisibility(View.VISIBLE);
+            holder.rightChatView.setVisibility(View.GONE);
+            holder.leftTextView.setText(mensagem.substring(5));
         } else {
-            ((IAViewHolder) holder).textMensagemIA.setText(conteudo);
+            holder.rightChatView.setVisibility(View.VISIBLE);
+            holder.leftChatView.setVisibility(View.GONE);
+            holder.rightTextView.setText(mensagem.substring(6));
         }
     }
+
 
     @Override
     public int getItemCount() {
         return mensagens.size();
     }
 
-    static class UsuarioViewHolder extends RecyclerView.ViewHolder {
-        TextView textMensagemUsuario;
+    static class ChatViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout leftChatView, rightChatView;
+        TextView leftTextView, rightTextView;
 
-        public UsuarioViewHolder(@NonNull View itemView) {
+        public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
-            textMensagemUsuario = itemView.findViewById(R.id.textMensagemUsuario);
-        }
-    }
-
-    static class IAViewHolder extends RecyclerView.ViewHolder {
-        TextView textMensagemIA;
-
-        public IAViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textMensagemIA = itemView.findViewById(R.id.textMensagemIA);
+            leftChatView = itemView.findViewById(R.id.left_chat_view);
+            rightChatView = itemView.findViewById(R.id.right_chat_view);
+            leftTextView = itemView.findViewById(R.id.left_chat_text_view);
+            rightTextView = itemView.findViewById(R.id.right_chat_text_view);
         }
     }
 }

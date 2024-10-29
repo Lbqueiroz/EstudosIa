@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation(libs.firebase.database)
     implementation(libs.appcompat)
     implementation(libs.material)

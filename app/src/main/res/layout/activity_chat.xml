@@ -67,6 +67,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
+
+
     <LinearLayout
         android:id="@+id/inputContainer"
         android:layout_width="0dp"
@@ -90,25 +93,22 @@
             android:id="@+id/inputField"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="@drawable/rounded_corner"
             android:hint="@string/estudar"
             android:inputType="text"
             android:textColor="@android:color/black" />
 
-        <Button
+        <ImageButton
             android:id="@+id/okButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:backgroundTint="#757575"
-            android:text="@string/ok"
-            android:textColor="@color/black"
-            android:textSize="16sp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="10dp"
             android:padding="8dp"
-            android:layout_marginStart="8dp" />
+            android:src="@drawable/baseline_send_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="enviar_mensagem" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
