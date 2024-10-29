@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "62928212422",
+    "project_id": "estuday-4360f",
+    "storage_bucket": "estuday-4360f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62928212422:android:3e1d7040e2c54d219c22c7",
+        "android_client_info": {
+          "package_name": "com.example.estuday"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJWjEENSjANnh_-m38IKv-uFTjKBOC1nA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

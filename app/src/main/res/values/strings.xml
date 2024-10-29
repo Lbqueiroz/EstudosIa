@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">estuDay</string>
+    <string name="user_icon">User Icon</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Senha</string>
+    <string name="login_button">Login</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="register_link">Cadastrar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="forgot_password_link">Esqueceu sua senha?</string>
+    <string name="title_register">REGISTRAR-SE</string>
+    <string name="hint_name">Nome</string>
+    <string name="ok">OK</string>
+    <string name="desejaestudar">Escolher conteudo desejado</string>
+    <string name="anexo">anexo</string>
+    <string name="estudar">Digite o que deseja estudar</string>
+    <string name="timer">timer</string>
+    <string name="histEstudo">Histórico de estudo</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Senha</string>
+    <string name="login_prompt">Já tem login? Loga-se</string>
+    <string name="button_register">REGISTRAR</string>
+    <string name="voltar">Voltar</string>
+    <string name="livro">Ícone de livros</string>
+    <string name="home">Home</string>
+    <string name="minha_conta">Minha Conta</string>
+    <string name="nome_usuario">Nome: Marcos Gabriel</string>
+    <string name="email_usuario">Email: marcosgabriel123@gmail.com</string>
+    <string name="redefinir_senha">Redefinir Senha</string>
+    <string name="logoff">Log Off</string>
+    <string name="redSenha">Para redefinir sua senha digite o seu e-mail</string>
+</resources>

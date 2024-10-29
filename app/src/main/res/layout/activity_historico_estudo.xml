@@ -1,0 +1,76 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#404040">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#BDBDBD"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/historicoTitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="HISTORICO DE ESTUDOS"
+            android:textSize="18sp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/voltarButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voltar"
+            android:textColor="@android:color/white"
+            android:background="#757575" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/filterBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/revisaoEstudos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Revisão dos estudos"
+            android:textColor="@android:color/white"
+            android:layout_margin="8dp" />
+
+        <TextView
+            android:id="@+id/tempoEstudos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tempo de estudos"
+            android:textColor="@android:color/white"
+            android:layout_margin="8dp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewHistorico"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/filterBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
