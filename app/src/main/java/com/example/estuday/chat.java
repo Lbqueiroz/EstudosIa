@@ -74,6 +74,23 @@ public class chat extends AppCompatActivity {
         profileButton.setOnClickListener(view -> verificarLogin());
 
 
+        inputField.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER &&
+                            event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
+
+                String conteudo = inputField.getText().toString().trim();
+                if (!conteudo.isEmpty()) {
+                    adicionarMensagem("Você: " + conteudo);
+                    callAPI(conteudo);
+                } else {
+                    Toast.makeText(this, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+            return false;
+        });
+
         attachIcon.setOnClickListener(view ->
                 Toast.makeText(this, "Funcionalidade de anexar não implementada", Toast.LENGTH_SHORT).show());
 
