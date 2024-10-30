@@ -53,6 +53,7 @@ public class chat extends AppCompatActivity {
     private Button profileButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private String temaAtual = "";
 
     private ChatAdapter adapter;
     private List<String> chatList = new ArrayList<>();
@@ -97,12 +98,17 @@ public class chat extends AppCompatActivity {
         okButton.setOnClickListener(view -> {
             String conteudo = inputField.getText().toString().trim();
             if (!conteudo.isEmpty()) {
-                adicionarMensagem("Você: " + conteudo);
-                callAPI(conteudo);
+                if (conteudo.equalsIgnoreCase("trocar tema")) {
+                    solicitarTema(); // Solicita novo tema se o usuário quiser trocar
+                } else {
+                    adicionarMensagem("Você: " + conteudo);
+                    callAPI(conteudo);
+                }
             } else {
                 Toast.makeText(this, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
             }
         });
+        solicitarTema();
     }
 
     private void adicionarMensagem(String mensagem) {
@@ -121,11 +127,15 @@ public class chat extends AppCompatActivity {
     private void callAPI(String question) {
         JSONObject jsonBody = new JSONObject();
         try {
+            JSONArray messages = new JSONArray();
+            messages.put(new JSONObject().put("role", "system")
+                    .put("content", "Você é um assistente de estudos que foca em temas educacionais e cria mapas mentais se pedidos."));
+            messages.put(new JSONObject().put("role", "user")
+                    .put("content", "Tema atual: " + temaAtual + ". " + question));
+
             jsonBody.put("model", "gpt-3.5-turbo");
-            jsonBody.put("messages", new JSONArray().put(
-                    new JSONObject().put("role", "user").put("content", question)
-            ));
-            jsonBody.put("max_tokens", 100);
+            jsonBody.put("messages", messages);
+            jsonBody.put("max_tokens", 300);
             jsonBody.put("temperature", 0.7);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -189,6 +199,29 @@ public class chat extends AppCompatActivity {
                     .setNegativeButton("Não", (dialog, which) -> dialog.dismiss())
                     .show();
         }
+    }
+
+    private void solicitarTema() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Escolha um tema para estudar");
+
+        final EditText input = new EditText(this);
+        input.setHint("Digite o tema");
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            temaAtual = input.getText().toString().trim();
+            if (!temaAtual.isEmpty()) {
+                adicionarMensagem("Tema atual: " + temaAtual);
+                callAPI("Fale sobre " + temaAtual);
+            } else {
+                Toast.makeText(this, "Por favor, digite um tema válido.", Toast.LENGTH_SHORT).show();
+                solicitarTema();
+            }
+        });
+
+        builder.setCancelable(false);
+        builder.show();
     }
 
 
