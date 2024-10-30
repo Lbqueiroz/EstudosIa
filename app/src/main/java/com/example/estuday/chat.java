@@ -1,23 +1,38 @@
 package com.example.estuday;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,6 +50,9 @@ public class chat extends AppCompatActivity {
     private ImageButton okButton;
     private EditText inputField;
     private RecyclerView chatRecyclerView;
+    private Button profileButton;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     private ChatAdapter adapter;
     private List<String> chatList = new ArrayList<>();
@@ -45,11 +63,16 @@ public class chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         iniciarComponentes();
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ChatAdapter(chatList);
         chatRecyclerView.setAdapter(adapter);
+        profileButton.setOnClickListener(view -> verificarLogin());
+
 
         attachIcon.setOnClickListener(view ->
                 Toast.makeText(this, "Funcionalidade de anexar não implementada", Toast.LENGTH_SHORT).show());
@@ -135,12 +158,29 @@ public class chat extends AppCompatActivity {
             }
         });
     }
+    private void verificarLogin() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            startActivity(new Intent(this, minha_conta.class));
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage("Você não está logado. Deseja fazer login?")
+                    .setPositiveButton("Sim", (dialog, which) -> {
+                        startActivity(new Intent(this, FormLogin.class));
+                        finish();
+                    })
+                    .setNegativeButton("Não", (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
+    }
+
 
     private void iniciarComponentes() {
         attachIcon = findViewById(R.id.attachIcon);
         okButton = findViewById(R.id.okButton);
         inputField = findViewById(R.id.inputField);
         chatRecyclerView = findViewById(R.id.chatRecyclerView);
+        profileButton = findViewById(R.id.profileButton);
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
