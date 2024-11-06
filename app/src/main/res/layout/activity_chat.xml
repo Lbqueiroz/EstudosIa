@@ -23,6 +23,7 @@
             android:id="@+id/iconBooks"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_marginTop="8dp"
             android:contentDescription="@string/livro"
             android:src="@drawable/baseline_book_24" />
 
@@ -83,7 +84,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical" />
+
+
     </ScrollView>
+
+    <ImageButton
+        android:id="@+id/button_scroll_to_bottom"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:visibility="gone"
+        android:src="@drawable/baseline_arrow_downward_24"
+        android:contentDescription="Ir para o final"
+        app:layout_constraintBottom_toTopOf="@id/inputContainer"
+        app:layout_constraintStart_toEndOf="@id/button_help"
+        app:layout_constraintEnd_toStartOf="@id/button_create_chat" />
 
     <ImageButton
         android:id="@+id/button_create_chat"

@@ -49,7 +49,7 @@ public class chat extends AppCompatActivity {
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private ImageView attachIcon;
-    private ImageButton okButton, buttonHelp, buttonCreateChat;
+    private ImageButton okButton, buttonHelp, buttonCreateChat, button_scroll_to_bottom;
     private EditText inputField;
     private TextView themeTextView;
     private RecyclerView chatRecyclerView;
@@ -78,6 +78,23 @@ public class chat extends AppCompatActivity {
         chatRecyclerView.setAdapter(adapter);
         profileButton.setOnClickListener(view -> verificarLogin());
 
+        chatRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) chatRecyclerView.getLayoutManager();
+                if (layoutManager != null) {
+                    int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+                    if (lastVisiblePosition < chatList.size() - 1) {
+                        button_scroll_to_bottom.setVisibility(View.VISIBLE);
+                    } else {
+                        button_scroll_to_bottom.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
         inputField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER &&
@@ -93,6 +110,12 @@ public class chat extends AppCompatActivity {
                 return true;
             }
             return false;
+        });
+
+        button_scroll_to_bottom.setOnClickListener(view -> {
+            if (!chatList.isEmpty()) {
+                chatRecyclerView.scrollToPosition(chatList.size() - 1);
+            }
         });
 
         buttonCreateChat.setOnClickListener(view -> {
@@ -173,7 +196,7 @@ public class chat extends AppCompatActivity {
             inputField.setText("");
             chatRecyclerView.scrollToPosition(chatList.size() - 1);
         }
-
+        chatRecyclerView.scrollToPosition(chatList.size() - 1);
         salvarMensagemNoFirestore(mensagem, "user");
     }
 
@@ -350,6 +373,7 @@ public class chat extends AppCompatActivity {
         buttonCreateChat = findViewById(R.id.button_create_chat);
         buttonHelp = findViewById(R.id.button_help);
         themeTextView = findViewById(R.id.themeTextView);
+        button_scroll_to_bottom = findViewById(R.id.button_scroll_to_bottom);
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
