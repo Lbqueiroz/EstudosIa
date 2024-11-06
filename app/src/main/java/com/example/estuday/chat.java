@@ -1,5 +1,6 @@
 package com.example.estuday;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,7 +53,7 @@ public class chat extends AppCompatActivity {
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private ImageView attachIcon;
-    private ImageButton okButton;
+    private ImageButton okButton, buttonHelp,buttonCreateChat ;
     private EditText inputField;
     private RecyclerView chatRecyclerView;
     private Button profileButton;
@@ -64,6 +65,7 @@ public class chat extends AppCompatActivity {
     private List<String> chatList = new ArrayList<>();
     private OkHttpClient client = new OkHttpClient();
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +97,19 @@ public class chat extends AppCompatActivity {
                 return true;
             }
             return false;
+        });
+
+
+        buttonCreateChat.setOnClickListener(view -> {
+            chatList.clear();
+            adapter.notifyDataSetChanged();
+            solicitarTema();
+        });
+
+        buttonHelp.setOnClickListener(view -> {
+            Intent intent = new Intent(chat.this, helpButton.class);
+            startActivity(intent);
+            finish();
         });
 
         attachIcon.setOnClickListener(view ->
@@ -260,6 +275,8 @@ public class chat extends AppCompatActivity {
         inputField = findViewById(R.id.inputField);
         chatRecyclerView = findViewById(R.id.chatRecyclerView);
         profileButton = findViewById(R.id.profileButton);
+        buttonCreateChat = findViewById(R.id.button_create_chat);
+        buttonHelp = findViewById(R.id.button_help);
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
