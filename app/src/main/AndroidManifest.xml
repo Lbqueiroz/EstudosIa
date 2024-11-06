@@ -26,9 +26,6 @@
             android:name=".FormLogin"
             android:exported="false" />
         <activity
-            android:name=".chatInicial"
-            android:exported="false" />
-        <activity
             android:name=".minha_conta"
             android:exported="false" />
         <activity
