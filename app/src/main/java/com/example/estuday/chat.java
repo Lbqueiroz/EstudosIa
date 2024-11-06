@@ -129,7 +129,7 @@ public class chat extends AppCompatActivity {
         try {
             JSONArray messages = new JSONArray();
             messages.put(new JSONObject().put("role", "system")
-                    .put("content", "Você é um assistente de estudos que foca em temas educacionais e cria mapas mentais se pedidos."));
+                    .put("content", "Você é um assistente de estudos que foca em temas educacionais para estudos."));
             messages.put(new JSONObject().put("role", "user")
                     .put("content", "Tema atual: " + temaAtual + ". " + question));
 
@@ -144,7 +144,7 @@ public class chat extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "")
+                .header("Authorization","" )
                 .header("Content-Type", "application/json")
                 .post(body)
                 .build();

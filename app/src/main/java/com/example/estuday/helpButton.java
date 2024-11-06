@@ -6,7 +6,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class CarouselActivity extends AppCompatActivity {
+public class helpButton extends AppCompatActivity {
 
     private ImageView imageView;
     private ImageButton buttonLeft, buttonRight;
@@ -23,16 +23,14 @@ public class CarouselActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carousel);
+        setContentView(R.layout.activity_help_button);
 
         imageView = findViewById(R.id.imageView);
         buttonLeft = findViewById(R.id.button_left);
         buttonRight = findViewById(R.id.button_right);
 
-        // Inicializa a primeira imagem
         imageView.setImageResource(imageResources[currentImageIndex]);
 
-        // Configura o botão da esquerda
         buttonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,7 +43,6 @@ public class CarouselActivity extends AppCompatActivity {
             }
         });
 
-        // Configura o botão da direita
         buttonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

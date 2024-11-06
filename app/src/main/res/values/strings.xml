@@ -16,17 +16,15 @@
     <string name="estudar">Digite o que deseja estudar</string>
     <string name="timer">timer</string>
     <string name="histEstudo">Histórico de estudo</string>
-    <string name="hint_email">Email</string>
-    <string name="hint_password">Senha</string>
     <string name="login_prompt">Já tem login? Loga-se</string>
     <string name="button_register">REGISTRAR</string>
     <string name="voltar">Voltar</string>
     <string name="livro">Ícone de livros</string>
     <string name="home">Home</string>
     <string name="minha_conta">Minha Conta</string>
-    <string name="nome_usuario">Nome: Marcos Gabriel</string>
-    <string name="email_usuario">Email: marcosgabriel123@gmail.com</string>
     <string name="redefinir_senha">Redefinir Senha</string>
     <string name="logoff">Log Off</string>
     <string name="redSenha">Para redefinir sua senha digite o seu e-mail</string>
+    <string name="version_text">VERSÃO 1</string>
+    <string name="image">Imagens</string>
 </resources>
