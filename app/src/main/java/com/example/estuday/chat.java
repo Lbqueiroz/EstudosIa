@@ -2,7 +2,6 @@ package com.example.estuday;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,16 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,8 +49,9 @@ public class chat extends AppCompatActivity {
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private ImageView attachIcon;
-    private ImageButton okButton, buttonHelp,buttonCreateChat ;
+    private ImageButton okButton, buttonHelp, buttonCreateChat;
     private EditText inputField;
+    private TextView themeTextView;
     private RecyclerView chatRecyclerView;
     private Button profileButton;
     private FirebaseAuth mAuth;
@@ -81,7 +78,6 @@ public class chat extends AppCompatActivity {
         chatRecyclerView.setAdapter(adapter);
         profileButton.setOnClickListener(view -> verificarLogin());
 
-
         inputField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER &&
@@ -98,7 +94,6 @@ public class chat extends AppCompatActivity {
             }
             return false;
         });
-
 
         buttonCreateChat.setOnClickListener(view -> {
             chatList.clear();
@@ -119,7 +114,7 @@ public class chat extends AppCompatActivity {
             String conteudo = inputField.getText().toString().trim();
             if (!conteudo.isEmpty()) {
                 if (conteudo.equalsIgnoreCase("trocar tema")) {
-                    solicitarTema(); // Solicita novo tema se o usuário quiser trocar
+                    solicitarTema();
                 } else {
                     adicionarMensagem("Você: " + conteudo);
                     callAPI(conteudo);
@@ -128,7 +123,14 @@ public class chat extends AppCompatActivity {
                 Toast.makeText(this, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
             }
         });
-        solicitarTema();
+
+        carregarMensagensAnteriores(() -> {
+            if (chatList.isEmpty()) {
+                solicitarTema();
+            } else {
+                mostrarDialogoTema();
+            }
+        });
     }
 
     public void hideKeyboard(View view) {
@@ -136,6 +138,16 @@ public class chat extends AppCompatActivity {
         if (inputMethodManager != null) {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void mostrarDialogoTema() {
+        new AlertDialog.Builder(this)
+                .setTitle("Tema existente encontrado")
+                .setMessage("Deseja manter o tema antigo ou iniciar um novo?")
+                .setPositiveButton("Novo Tema", (dialog, which) -> solicitarTema())
+                .setNegativeButton("Manter Tema", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
 
     @Override
@@ -154,28 +166,66 @@ public class chat extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-
     private void adicionarMensagem(String mensagem) {
-        chatList.add(mensagem);
-        adapter.notifyDataSetChanged();
-        inputField.setText("");
-        chatRecyclerView.scrollToPosition(chatList.size() - 1);
+        if (mensagem != null && !mensagem.isEmpty()) {
+            chatList.add(mensagem.trim());
+            adapter.notifyDataSetChanged();
+            inputField.setText("");
+            chatRecyclerView.scrollToPosition(chatList.size() - 1);
+        }
+
+        salvarMensagemNoFirestore(mensagem, "user");
     }
 
     private void adicionarResposta(String resposta) {
         chatList.add("Bot: " + resposta);
         adapter.notifyDataSetChanged();
         chatRecyclerView.scrollToPosition(chatList.size() - 1);
+
+        salvarMensagemNoFirestore("Bot: " + resposta, "bot");
+    }
+
+    private void salvarMensagemNoFirestore(String mensagem, String remetente) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            String chatSessionId = "defaultSession";
+
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("timestamp", new Date());
+            messageData.put("sender", remetente);
+            messageData.put("content", mensagem);
+
+            db.collection("users").document(userId).collection("chats").document(chatSessionId)
+                    .collection("messages").add(messageData)
+                    .addOnSuccessListener(documentReference -> {})
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Erro ao salvar mensagem: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    private void salvarTemaNoFirestore(String tema) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            Map<String, Object> temaData = new HashMap<>();
+            temaData.put("tema", tema);
+            temaData.put("timestamp", new Date());
+
+            db.collection("users").document(userId).collection("temas").add(temaData)
+                    .addOnSuccessListener(documentReference ->
+                            Toast.makeText(this, "Tema salvo com sucesso", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Erro ao salvar o tema: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
     }
 
     private void callAPI(String question) {
         JSONObject jsonBody = new JSONObject();
         try {
             JSONArray messages = new JSONArray();
-            messages.put(new JSONObject().put("role", "system")
-                    .put("content", "Você é um assistente de estudos que foca em temas educacionais para estudos."));
-            messages.put(new JSONObject().put("role", "user")
-                    .put("content", "Tema atual: " + temaAtual + ". " + question));
+            messages.put(new JSONObject().put("role", "system").put("content", "Você é um assistente de estudos que foca em temas educacionais para estudos."));
+            messages.put(new JSONObject().put("role", "user").put("content", "Tema atual: " + temaAtual + ". " + question));
 
             jsonBody.put("model", "gpt-3.5-turbo");
             jsonBody.put("messages", messages);
@@ -188,7 +238,7 @@ public class chat extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization","" )
+                .header("Authorization", "")
                 .header("Content-Type", "application/json")
                 .post(body)
                 .build();
@@ -196,23 +246,18 @@ public class chat extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() ->
-                        Toast.makeText(chat.this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(chat.this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseBody = response.body() != null ? response.body().string() : "Corpo da resposta é nulo";
 
-                System.out.println("Resposta da API: " + responseBody);
-
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonObject = new JSONObject(responseBody);
                         JSONArray choices = jsonObject.getJSONArray("choices");
-                        String result = choices.getJSONObject(0)
-                                .getJSONObject("message")
-                                .getString("content").trim();
+                        String result = choices.getJSONObject(0).getJSONObject("message").getString("content").trim();
                         runOnUiThread(() -> adicionarResposta(result));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -229,6 +274,32 @@ public class chat extends AppCompatActivity {
             }
         });
     }
+
+    private void carregarMensagensAnteriores(Runnable callback) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            db.collection("users").document(userId).collection("chats").document("defaultSession")
+                    .collection("messages").orderBy("timestamp").get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                String conteudo = document.getString("content");
+                                chatList.add(conteudo);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+                        callback.run();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Erro ao carregar mensagens: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        callback.run();
+                    });
+        } else {
+            callback.run();
+        }
+    }
+
     private void verificarLogin() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -256,8 +327,9 @@ public class chat extends AppCompatActivity {
         builder.setPositiveButton("OK", (dialog, which) -> {
             temaAtual = input.getText().toString().trim();
             if (!temaAtual.isEmpty()) {
-                adicionarMensagem("Tema atual: " + temaAtual);
+                themeTextView.setText("Tema atual: " + temaAtual);
                 callAPI("Fale sobre " + temaAtual);
+                salvarTemaNoFirestore(temaAtual);
             } else {
                 Toast.makeText(this, "Por favor, digite um tema válido.", Toast.LENGTH_SHORT).show();
                 solicitarTema();
@@ -268,7 +340,6 @@ public class chat extends AppCompatActivity {
         builder.show();
     }
 
-
     private void iniciarComponentes() {
         attachIcon = findViewById(R.id.attachIcon);
         okButton = findViewById(R.id.okButton);
@@ -277,7 +348,9 @@ public class chat extends AppCompatActivity {
         profileButton = findViewById(R.id.profileButton);
         buttonCreateChat = findViewById(R.id.button_create_chat);
         buttonHelp = findViewById(R.id.button_help);
+        themeTextView = findViewById(R.id.themeTextView);
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }
+
