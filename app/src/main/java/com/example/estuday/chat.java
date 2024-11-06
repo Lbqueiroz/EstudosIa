@@ -238,7 +238,7 @@ public class chat extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "")
+                .header("Authorization", " " +"")
                 .header("Content-Type", "application/json")
                 .post(body)
                 .build();
@@ -328,6 +328,7 @@ public class chat extends AppCompatActivity {
             temaAtual = input.getText().toString().trim();
             if (!temaAtual.isEmpty()) {
                 themeTextView.setText("Tema atual: " + temaAtual);
+                adicionarResposta("Seu Tema : " + temaAtual);
                 callAPI("Fale sobre " + temaAtual);
                 salvarTemaNoFirestore(temaAtual);
             } else {
