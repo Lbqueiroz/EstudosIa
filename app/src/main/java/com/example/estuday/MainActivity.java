@@ -18,4 +18,13 @@ public class MainActivity extends AppCompatActivity {
             finish(); //
         }, 3000);
     }
+    //ESTUDANTES:
+    // Claudio Roberto Junio de Oliveira de Moraes
+    //Lucas Brenio de Queiroz Oliveira
+    //Lucas Ferreira Rodriguez
+    //Luiz Felipe de Oliveira Araujo
+    //Marcos Gabriel Pereira dos Santos
+    //Pedro Victor Monteiro Fidelis
+    //Talles Silva de Morais
+    //Thiago da Silva Borges
 }
