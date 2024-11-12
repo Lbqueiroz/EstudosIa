@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "62928212422",
+    "firebase_url": "https://estuday-4360f-default-rtdb.firebaseio.com",
     "project_id": "estuday-4360f",
-    "storage_bucket": "estuday-4360f.appspot.com"
+    "storage_bucket": "estuday-4360f.firebasestorage.app"
   },
   "client": [
     {
