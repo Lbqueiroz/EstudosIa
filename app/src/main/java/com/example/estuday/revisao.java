@@ -67,7 +67,7 @@ public class revisao extends AppCompatActivity {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             for (DocumentSnapshot document : queryDocumentSnapshots) {
                                 String tema = document.getString("tema");
-                                String duracao = document.getString("duracao"); // Certifique-se de que esse campo está presente no Firestore
+                                String duracao = document.getString("duracao");
                                 if (tema != null && duracao != null) {
                                     tvTemaRevisao.setText("Tema: " + tema + " | Duração: " + duracao);
                                 }
@@ -88,7 +88,7 @@ public class revisao extends AppCompatActivity {
         if (user != null) {
             String userId = user.getUid();
 
-            db.collection("users").document(userId).collection("historico")
+            db.collection("users").document(userId).collection("temas")
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
