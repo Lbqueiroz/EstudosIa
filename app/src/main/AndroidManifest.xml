@@ -17,6 +17,9 @@
         android:theme="@style/Theme.EstuDay"
         tools:targetApi="31">
         <activity
+            android:name=".HistoricoMensagensActivity"
+            android:exported="false" />
+        <activity
             android:name=".revisao"
             android:exported="false" />
         <activity

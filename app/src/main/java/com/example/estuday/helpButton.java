@@ -20,6 +20,8 @@ public class helpButton extends AppCompatActivity {
             R.drawable.telainicial,
     };
 
+    //1° tela por a logo, integrantes e informacoes do app
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

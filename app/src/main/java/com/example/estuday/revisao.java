@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +26,7 @@ public class revisao extends AppCompatActivity {
 
     private RecyclerView rvHistorico;
     private List<RevisaoItem> revisaoList;
-    private TextView voltar, tvHistoricoEstudos, tvTemaRevisao;
+    private TextView voltar, tvHistoricoEstudos;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -53,35 +51,8 @@ public class revisao extends AppCompatActivity {
         rvHistorico.setLayoutManager(new LinearLayoutManager(this));
 
         revisaoList = new ArrayList<>();
-        carregarTemasEDuracao();
         buscarHistoricoEstudos();
     }
-
-    private void carregarTemasEDuracao() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            db.collection("users").document(userId).collection("temas")
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            for (DocumentSnapshot document : queryDocumentSnapshots) {
-                                String tema = document.getString("tema");
-                                String duracao = document.getString("duracao");
-                                if (tema != null && duracao != null) {
-                                    tvTemaRevisao.setText("Tema: " + tema + " | Duração: " + duracao);
-                                }
-                            }
-                        } else {
-                            Toast.makeText(this, "Nenhum tema encontrado", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Erro ao carregar temas: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-        }
-    }
-
 
     private void buscarHistoricoEstudos() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -126,6 +97,13 @@ public class revisao extends AppCompatActivity {
             RevisaoItem item = revisaoList.get(position);
             holder.tvTemaRevisao.setText(item.getTema());
             holder.tvDuracaoRevisao.setText(item.getDuracao());
+
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(revisao.this, HistoricoMensagensActivity.class);
+                intent.putExtra("tema", item.getTema());
+                intent.putExtra("userId", mAuth.getCurrentUser().getUid());
+                startActivity(intent);
+            });
         }
 
         @Override
@@ -135,11 +113,13 @@ public class revisao extends AppCompatActivity {
 
         class RevisaoViewHolder extends RecyclerView.ViewHolder {
             TextView tvTemaRevisao, tvDuracaoRevisao;
+            ImageView ivArrow;
 
             public RevisaoViewHolder(View itemView) {
                 super(itemView);
                 tvTemaRevisao = itemView.findViewById(R.id.tvTemaRevisao);
                 tvDuracaoRevisao = itemView.findViewById(R.id.tvDuracaoRevisao);
+                ivArrow = itemView.findViewById(R.id.ivArrow);
             }
         }
     }
@@ -165,6 +145,5 @@ public class revisao extends AppCompatActivity {
     private void iniciarComponentes() {
         voltar = findViewById(R.id.voltar);
         tvHistoricoEstudos = findViewById(R.id.tvHistoricoEstudos);
-        tvTemaRevisao = findViewById(R.id.tvTemaRevisao);
     }
 }

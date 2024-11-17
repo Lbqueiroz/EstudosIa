@@ -14,51 +14,51 @@ import java.util.Map;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
-    private List<String> mensagens;
+    private final List<Map<String, String>> chatList;
 
-    public ChatAdapter(List<String> mensagens) {
-        this.mensagens = mensagens;
+    public ChatAdapter(List<Map<String, String>> chatList) {
+        this.chatList = chatList;
     }
 
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.chat_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, parent, false);
         return new ChatViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        String mensagem = mensagens.get(position);
+        Map<String, String> messageData = chatList.get(position);
+        String content = messageData.get("content");
+        String sender = messageData.get("sender");
 
-        if (mensagem.startsWith("Bot: ")) {
-            holder.leftChatView.setVisibility(View.VISIBLE);
-            holder.rightChatView.setVisibility(View.GONE);
-            holder.leftTextView.setText(mensagem.substring(5));
-        } else {
-            holder.rightChatView.setVisibility(View.VISIBLE);
+        if ("user".equals(sender)) {
             holder.leftChatView.setVisibility(View.GONE);
-            holder.rightTextView.setText(mensagem.substring(6));
+            holder.rightChatView.setVisibility(View.VISIBLE);
+            holder.rightChatTextView.setText(content);
+        } else {
+            holder.rightChatView.setVisibility(View.GONE);
+            holder.leftChatView.setVisibility(View.VISIBLE);
+            holder.leftChatTextView.setText(content);
         }
     }
 
-
     @Override
     public int getItemCount() {
-        return mensagens.size();
+        return chatList.size();
     }
 
-    static class ChatViewHolder extends RecyclerView.ViewHolder {
+    public static class ChatViewHolder extends RecyclerView.ViewHolder {
         LinearLayout leftChatView, rightChatView;
-        TextView leftTextView, rightTextView;
+        TextView leftChatTextView, rightChatTextView;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             leftChatView = itemView.findViewById(R.id.left_chat_view);
             rightChatView = itemView.findViewById(R.id.right_chat_view);
-            leftTextView = itemView.findViewById(R.id.left_chat_text_view);
-            rightTextView = itemView.findViewById(R.id.right_chat_text_view);
+            leftChatTextView = itemView.findViewById(R.id.left_chat_text_view);
+            rightChatTextView = itemView.findViewById(R.id.right_chat_text_view);
         }
     }
 }

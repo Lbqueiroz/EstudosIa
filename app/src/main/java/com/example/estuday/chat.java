@@ -58,7 +58,7 @@ public class chat extends AppCompatActivity {
     private boolean temaDefinido = false;
 
     private ChatAdapter adapter;
-    private List<String> chatList = new ArrayList<>();
+    private List<Map<String, String>> chatList = new ArrayList<>();
     private OkHttpClient client = new OkHttpClient();
 
     @SuppressLint("NotifyDataSetChanged")
@@ -91,6 +91,7 @@ public class chat extends AppCompatActivity {
                 }
             }
         });
+
 
         inputField.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && !temaDefinido) {
@@ -134,7 +135,7 @@ public class chat extends AppCompatActivity {
             if (temaDefinido) {
                 long endTime = SystemClock.elapsedRealtime();
                 chatDuration = endTime - startTime;
-                salvarDuracaoNoFirestore(temaAtual,chatDuration);
+                salvarDuracaoNoFirestore(temaAtual, chatDuration);
             }
             chatList.clear();
             adapter.notifyDataSetChanged();
@@ -256,39 +257,27 @@ public class chat extends AppCompatActivity {
 
     private void adicionarMensagem(String mensagem) {
         if (mensagem != null && !mensagem.isEmpty()) {
-            chatList.add(mensagem.trim());
+            Map<String, String> mensagemData = new HashMap<>();
+            mensagemData.put("content", mensagem.trim());
+            mensagemData.put("sender", "user");
+            chatList.add(mensagemData);
             adapter.notifyDataSetChanged();
             inputField.setText("");
             chatRecyclerView.scrollToPosition(chatList.size() - 1);
-            salvarMensagemNoFirestore("mensagem", "user");
+            salvarMensagemNoFirestore(mensagem, "user");
         }
     }
 
     private void adicionarResposta(String resposta) {
-        chatList.add("Bot: " + resposta);
+        Map<String, String> mensagemData = new HashMap<>();
+        mensagemData.put("content", resposta.trim());
+        mensagemData.put("sender", "bot");
+        chatList.add(mensagemData);
         adapter.notifyDataSetChanged();
         chatRecyclerView.scrollToPosition(chatList.size() - 1);
-        salvarMensagemNoFirestore("mensagem", "Bot: " + resposta);
+        salvarMensagemNoFirestore(resposta, "bot");
     }
 
-    private void salvarMensagemNoFirestore(String mensagem, String remetente) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            String chatSessionId = "defaultSession";
-
-            Map<String, Object> messageData = new HashMap<>();
-            messageData.put("timestamp", new Date());
-            messageData.put("sender", remetente);
-            messageData.put("content", mensagem);
-
-            db.collection("users").document(userId).collection("chats").document(chatSessionId)
-                    .collection("messages").add(messageData)
-                    .addOnSuccessListener(documentReference -> {})
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Erro ao salvar mensagem: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        }
-    }
 
     private void salvarTemaNoFirestore(String tema) {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -298,13 +287,38 @@ public class chat extends AppCompatActivity {
             temaData.put("tema", tema);
             temaData.put("timestamp", new Date());
 
-            db.collection("users").document(userId).collection("temas").add(temaData)
+            // Salva o documento do tema com o ID do tema como referência
+            db.collection("users").document(userId).collection("temas").document(tema)
+                    .set(temaData)
                     .addOnSuccessListener(documentReference ->
                             Toast.makeText(this, "Tema salvo com sucesso", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e ->
                             Toast.makeText(this, "Erro ao salvar o tema: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
+
+    private void salvarMensagemNoFirestore(String mensagem, String remetente) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            if (temaAtual != null && !temaAtual.isEmpty()) {
+                Map<String, Object> messageData = new HashMap<>();
+                messageData.put("timestamp", new Date());
+                messageData.put("sender", remetente); // Adiciona o remetente (user ou bot)
+                messageData.put("content", mensagem); // Salva apenas o conteúdo, sem prefixo
+
+                db.collection("users").document(userId).collection("temas").document(temaAtual)
+                        .collection("messages").add(messageData)
+                        .addOnSuccessListener(documentReference -> {
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(this, "Erro ao salvar mensagem: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(this, "Tema não definido. Não é possível salvar a mensagem.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void salvarDuracaoNoFirestore(String tema, long duracao) {
         FirebaseUser user = mAuth.getCurrentUser();
